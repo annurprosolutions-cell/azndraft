@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>AZN Invoice</title>
+  <meta name="description" content="Sistem penjana invoice AZN Power Solution" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AZN Invoice" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: { brand: { 50:'#fff8eb', 100:'#feeac7', 400:'#f6b23a', 500:'#ef9a12', 600:'#d77a08', 700:'#b25a0b' } }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased">
+
+  <!-- ================= TOP BAR ================= -->
+  <header class="app-header sticky top-0 z-30 bg-slate-900 text-white shadow">
+    <div class="max-w-[1500px] mx-auto px-4 h-14 flex items-center gap-3">
+      <img src="assets/icon-192.png" alt="" class="w-8 h-8 rounded-lg bg-white p-0.5" />
+      <div class="leading-tight">
+        <div class="font-semibold text-[15px]">AZN Invoice</div>
+        <div id="appCoName" class="text-[11px] text-slate-400 -mt-0.5 truncate max-w-[40vw]">AZN Power Solution</div>
+      </div>
+
+      <nav class="ml-auto flex items-center bg-slate-800 rounded-lg p-1 text-sm">
+        <button data-view="create" class="nav-btn active">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <span class="hidden sm:inline">Buat Baru</span>
+        </button>
+        <button data-view="history" class="nav-btn">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M7 4h7l5 5v11a1 1 0 01-1 1H7a1 1 0 01-1-1V5a1 1 0 011-1z"/></svg>
+          <span class="hidden sm:inline">Rekod</span>
+        </button>
+        <button data-view="admin" class="nav-btn">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/></svg>
+          <span class="hidden sm:inline">Admin</span>
+        </button>
+      </nav>
+      <button id="btnSettings" class="p-2 rounded-lg hover:bg-slate-800" title="Tetapan">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.3 4.3c.4-1.7 3-1.7 3.4 0a1.7 1.7 0 002.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 001 2.5c1.8.4 1.8 3 0 3.4a1.7 1.7 0 00-1 2.6c.9 1.5-.9 3.3-2.4 2.4a1.7 1.7 0 00-2.6 1c-.4 1.8-3 1.8-3.4 0a1.7 1.7 0 00-2.6-1c-1.5.9-3.3-.9-2.4-2.4a1.7 1.7 0 00-1-2.6c-1.8-.4-1.8-3 0-3.4a1.7 1.7 0 001-2.5c-.9-1.6.9-3.3 2.4-2.4 1 .6 2.3.1 2.6-1.1z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= VIEW: CREATE ================= -->
+  <main id="view-create" class="max-w-[1500px] mx-auto px-3 sm:px-4 pt-4 pb-28 lg:pb-8">
+
+    <!-- Jenis dokumen -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+      <div id="docSeg" class="doc-seg">
+        <button type="button" data-doc="invoice" class="active">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 4h7l5 5v11a1 1 0 01-1 1H7a1 1 0 01-1-1V5a1 1 0 011-1z"/><path d="M14 4v5h5M9 13h6M9 17h4"/></svg>
+          Invoice
+        </button>
+        <button type="button" data-doc="quotation">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 4h7l5 5v11a1 1 0 01-1 1H7a1 1 0 01-1-1V5a1 1 0 011-1z"/><path d="M14 4v5h5M12 11v6M9.5 13.5c0-1 1-1.5 2.5-1.5s2.5.6 2.5 1.4c0 2-5 1-5 3 0 .8 1 1.4 2.5 1.4s2.5-.5 2.5-1.5"/></svg>
+          Quotation
+        </button>
+        <button type="button" data-doc="do">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h11v9H3zM14 10h4l3 3v3h-7M7.5 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm10 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
+          DO
+        </button>
+      </div>
+      <div id="convertBanner" class="hidden flex-1 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m-6-6l6 6-6 6"/></svg>
+        <span class="min-w-0">Dibuat dari <span id="convertType">Quotation</span> <b id="convertRef"></b></span>
+        <button type="button" id="convertClear" class="ml-auto text-emerald-700 hover:text-emerald-900 text-xs font-semibold shrink-0">Buang pautan</button>
+      </div>
+    </div>
+
+    <!-- Mobile tab switch -->
+    <div class="lg:hidden mb-3 grid grid-cols-2 bg-white rounded-xl p-1 shadow-sm border border-slate-200 text-sm font-medium">
+      <button data-pane="form" class="pane-btn active">Isi Maklumat</button>
+      <button data-pane="preview" class="pane-btn">Preview</button>
+    </div>
+
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-5 items-start">
+
+      <!-- ========== FORM ========== -->
+      <section id="pane-form" class="space-y-4">
+
+        <!-- Invoice info -->
+        <div class="card">
+          <div class="card-head">
+            <span class="step">1</span>
+            <h2 id="docCardTitle">Maklumat Invoice</h2>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="col-span-2 sm:col-span-1">
+              <label class="lbl" for="invoiceNo" id="noLabelForm">No. Invoice</label>
+              <div class="relative">
+                <input id="invoiceNo" class="inp pr-10 font-semibold" placeholder="AZN/0225-001" />
+                <button id="btnRegen" type="button" class="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-slate-400 hover:text-brand-600 hover:bg-brand-50" title="Jana nombor auto">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.6M20 20v-5h-.6M5.1 9A8 8 0 0119.4 7.5M18.9 15A8 8 0 014.6 16.5"/></svg>
+                </button>
+              </div>
+              <p id="invNoHint" class="hint">Auto ikut bulan & tahun tarikh</p>
+            </div>
+            <div class="col-span-2 sm:col-span-1">
+              <label class="lbl" for="date">Tarikh</label>
+              <input id="date" type="date" class="inp" />
+            </div>
+            <div class="no-do">
+              <label class="lbl" for="terms">Terms</label>
+              <input id="terms" class="inp" list="termsList" />
+              <datalist id="termsList">
+                <option value="CASH"></option><option value="7 DAYS"></option><option value="14 DAYS"></option><option value="30 DAYS"></option><option value="COD"></option>
+              </datalist>
+            </div>
+            <div>
+              <label class="lbl" for="attn" id="attnLabel">Attn</label>
+              <input id="attn" class="inp" placeholder="Nama penerima" />
+            </div>
+            <div>
+              <label class="lbl" for="ourRef" id="ourRefLabel">Our Ref.</label>
+              <input id="ourRef" class="inp" placeholder="Pilihan" />
+            </div>
+            <div>
+              <label class="lbl" for="yourRef" id="yourRefLabel">Your Ref.</label>
+              <input id="yourRef" class="inp" placeholder="Pilihan (cth: PO no.)" />
+            </div>
+            <div id="validityWrap" class="col-span-2 hidden">
+              <label class="lbl" for="validity">Validity (tempoh sah quotation)</label>
+              <input id="validity" class="inp uppercase-input" list="validityList" placeholder="cth: 30 DAYS" />
+              <datalist id="validityList">
+                <option value="7 DAYS"></option><option value="14 DAYS"></option><option value="30 DAYS"></option><option value="60 DAYS"></option><option value="90 DAYS"></option>
+              </datalist>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bill to -->
+        <div class="card">
+          <div class="card-head">
+            <span class="step">2</span>
+            <h2>Bill To</h2>
+          </div>
+          <div class="space-y-3">
+            <div>
+              <label class="lbl" for="billName">Nama Syarikat <span class="text-red-500">*</span></label>
+              <input id="billName" class="inp uppercase-input" placeholder="Nama syarikat pelanggan" />
+            </div>
+            <div>
+              <label class="lbl" for="billAddress">Alamat <span class="text-red-500">*</span></label>
+              <textarea id="billAddress" rows="3" class="inp uppercase-input resize-none" placeholder="Satu baris = satu line dalam invoice"></textarea>
+              <p class="hint">Tekan Enter untuk baris baru</p>
+            </div>
+            <div>
+              <label class="lbl" for="billTel">No. Telefon</label>
+              <input id="billTel" type="tel" class="inp" placeholder="04-421 4755" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Ship to (DO sahaja) -->
+        <div class="card only-do">
+          <div class="card-head">
+            <span class="step">2b</span>
+            <h2>Ship To (alamat hantar)</h2>
+          </div>
+          <label class="chk !text-sm !mt-0"><input type="checkbox" id="shipSame" checked /> Sama dengan Bill To</label>
+          <div id="shipFields" class="space-y-3 mt-3 hidden">
+            <div><label class="lbl" for="shipName">Nama / Lokasi</label><input id="shipName" class="inp uppercase-input" placeholder="cth: TAPAK PROJEK / GUDANG" /></div>
+            <div><label class="lbl" for="shipAddress">Alamat Hantar</label><textarea id="shipAddress" rows="3" class="inp uppercase-input resize-none"></textarea></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="lbl" for="shipAttn">Contact Person</label><input id="shipAttn" class="inp uppercase-input" /></div>
+              <div><label class="lbl" for="shipTel">No. Telefon</label><input id="shipTel" type="tel" class="inp" /></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <div class="card">
+          <div class="card-head">
+            <span class="step">3</span>
+            <h2>Item / Description</h2>
+            <span id="itemCount" class="ml-auto text-xs text-slate-500"></span>
+          </div>
+
+          <div id="itemList" class="space-y-3"></div>
+
+          <button id="btnAddItem" type="button" class="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-slate-300 text-slate-600 font-medium hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Tambah Item
+          </button>
+
+          <div class="mt-4 rounded-xl bg-slate-900 text-white p-4">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-slate-300" id="totalCaption">Jumlah Keseluruhan</span>
+              <span id="totalDisplay" class="text-2xl font-bold tracking-tight">RM0.00</span>
+            </div>
+            <div id="wordsDisplay" class="text-[11px] text-slate-400 mt-1 uppercase"></div>
+          </div>
+        </div>
+
+        <!-- Desktop actions -->
+        <div class="hidden lg:flex gap-3">
+          <button id="btnReset" type="button" class="btn-ghost">Kosongkan Borang</button>
+          <button id="btnDownload" type="button" class="btn-outline flex-1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+            Muat Turun Sahaja
+          </button>
+          <button id="btnGenerate" type="button" class="btn-primary flex-[1.4]">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Jana PDF & Simpan
+          </button>
+        </div>
+      </section>
+
+      <!-- ========== PREVIEW ========== -->
+      <section id="pane-preview" class="hidden lg:block lg:sticky lg:top-[72px]">
+        <div class="flex items-center justify-between mb-2 px-1">
+          <h3 class="text-sm font-semibold text-slate-600 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Preview
+          </h3>
+          <span class="text-xs text-slate-400">A4</span>
+        </div>
+        <div id="previewWrap" class="preview-wrap">
+          <div id="previewScaler" class="preview-scaler">
+
+            <!-- ===== INVOICE PAGE (A4 @ 96dpi = 794 x 1123) ===== -->
+            <div id="invoicePage" class="inv-page">
+              <div class="inv-header">
+                <img src="assets/logo.png" class="inv-logo" data-img="logo" alt="logo" />
+                <div class="inv-company">
+                  <div class="inv-co-name" data-bind="coName"></div>
+                  <div>Registration No : (<span data-bind="coReg"></span>)</div>
+                  <div data-bind="coAddr"></div>
+                  <div>Email :<span data-bind="coEmail"></span></div>
+                  <div>Tel :<span data-bind="coTel"></span></div>
+                </div>
+              </div>
+              <div class="inv-hr"></div>
+              <div class="inv-title" data-bind="docTitle">INVOICE</div>
+
+              <div class="do-only do-bar">
+                <div><span>DO No:</span> <b data-bind="invoiceNo"></b></div>
+                <div><span>Date:</span> <span data-bind="date"></span></div>
+                <div><span>PO:</span> <span data-bind="yourRef"></span></div>
+                <div><span>Ref No:</span> <span data-bind="ourRef"></span></div>
+              </div>
+              <div class="do-only do-parties">
+                <div>
+                  <div>Bill To:</div>
+                  <div class="b" data-bind="billName"></div>
+                  <div data-bind="billAddress" class="pre"></div>
+                  <table class="do-ct"><tr><td>Tel</td><td>:</td><td data-bind="billTel"></td></tr><tr><td>Contact</td><td>:</td><td data-bind="attn"></td></tr></table>
+                </div>
+                <div>
+                  <div>Ship To:</div>
+                  <div class="b" data-bind="shipName"></div>
+                  <div data-bind="shipAddress" class="pre"></div>
+                  <table class="do-ct"><tr><td>Tel</td><td>:</td><td data-bind="shipTel"></td></tr><tr><td>Contact</td><td>:</td><td data-bind="shipAttn"></td></tr></table>
+                </div>
+              </div>
+
+              <div class="inv-meta not-do">
+                <div class="inv-billto">
+                  <div class="b">BILL TO:</div>
+                  <div class="b" data-bind="billName"></div>
+                  <div data-bind="billAddress" class="pre"></div>
+                  <div class="inv-tel">Tel : <span data-bind="billTel"></span></div>
+                  <div>Attn: <span data-bind="attn"></span></div>
+                </div>
+                <table class="inv-info">
+                  <tr class="b"><td data-bind="noLabel">INVOICE NO</td><td>:</td><td data-bind="invoiceNo"></td></tr>
+                  <tr><td>Our Ref.</td><td>:</td><td data-bind="ourRef"></td></tr>
+                  <tr><td>Your Ref.</td><td>:</td><td data-bind="yourRef"></td></tr>
+                  <tr><td>Terms</td><td>:</td><td data-bind="terms"></td></tr>
+                  <tr><td>Date</td><td>:</td><td data-bind="date"></td></tr>
+                  <tr class="q-only"><td>Validity</td><td>:</td><td data-bind="validity"></td></tr>
+                </table>
+              </div>
+
+              <div class="inv-items">
+                <table class="inv-table">
+                  <colgroup id="invCols"></colgroup>
+                  <thead id="invHead"></thead>
+                  <tbody id="invRows"></tbody>
+                </table>
+              </div>
+
+              <div class="inv-total">
+                <span data-bind="totalLabel">TOTAL AMOUNT FOR THIS CLAIM</span>
+                <span data-bind="totalRM"></span>
+              </div>
+              <div class="inv-words not-do">RINGGIT MALAYSIA :<span data-bind="words"></span></div>
+
+              <div class="inv-notes">
+                <div class="inv-notes-h">Notes:</div>
+                <div class="not-do">
+                  <div class="n1">: 1. All cheques should be crossed and made payable to :</div>
+                  <div class="n1c" data-bind="coName"></div>
+                  <div class="n1c"><span data-bind="bankName"></span> : <span data-bind="bankAcc"></span></div>
+                </div>
+                <div class="do-only qn">
+                  <div>1. <span data-bind="doNote1"></span></div>
+                  <div>2. <span data-bind="doNote2"></span></div>
+                </div>
+                <div class="inv-only">
+                  <div class="n2">2. <span data-bind="note2"></span></div>
+                  <div class="n3" data-bind="note3"></div>
+                </div>
+                <div class="q-only qn">
+                  <div>2. <span data-bind="qNote1"></span></div>
+                  <div>3. <span data-bind="qNote2"></span></div>
+                  <div>4. <span data-bind="qNote3"></span></div>
+                </div>
+              </div>
+
+              <div class="sign-row">
+              <div class="inv-sign">
+                <div class="inv-sign-img">
+                  <img src="assets/stamp.png" class="inv-stamp" data-img="stamp" alt="" />
+                  <img src="assets/signature.png" class="inv-signature" data-img="signature" alt="" />
+                </div>
+                <div class="inv-sign-line"></div>
+                <div class="inv-sign-name" data-bind="signName"></div>
+                <div class="inv-sign-title" data-bind="signTitle"></div>
+                <div class="inv-sign-title do-only" data-bind="signTel"></div>
+                <div class="do-only do-auth">Authorised By</div>
+              </div>
+              <div class="do-only do-recv">
+                <div class="do-recv-space"></div>
+                <div class="inv-sign-line"></div>
+                <div class="do-recv-f">Name :</div>
+                <div class="do-recv-f">Date :</div>
+                <div class="do-auth">Received By</div>
+              </div>
+              </div>
+            </div>
+            <!-- ===== END INVOICE ===== -->
+
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Mobile sticky action bar -->
+  <div id="mobileBar" class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200 px-3 pt-3 safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+    <div class="flex items-center gap-2">
+      <div class="flex-1 min-w-0">
+        <div class="text-[11px] text-slate-500 leading-none">Jumlah</div>
+        <div id="mTotal" class="text-lg font-bold text-slate-900 truncate">RM0.00</div>
+      </div>
+      <button id="mDownload" class="btn-outline !px-3 !py-3" title="Muat turun sahaja">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+      </button>
+      <button id="mGenerate" class="btn-primary !py-3 px-5">Jana PDF & Simpan</button>
+    </div>
+  </div>
+
+  <!-- ================= VIEW: HISTORY ================= -->
+  <main id="view-history" class="hidden max-w-5xl mx-auto px-3 sm:px-4 pt-4 pb-10">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900">Rekod</h1>
+        <p class="text-sm text-slate-500">Semua dokumen yang disimpan dalam Google Sheet</p>
+        <div id="histSeg" class="doc-seg doc-seg-sm mt-3">
+          <button type="button" data-hist="invoice" class="active">Invoice</button>
+          <button type="button" data-hist="quotation">Quotation</button>
+          <button type="button" data-hist="do">DO</button>
+        </div>
+      </div>
+      <div class="sm:ml-auto flex gap-2">
+        <input id="searchHist" class="inp sm:w-64" placeholder="Cari no. dokumen / syarikat" />
+        <button id="btnRefresh" class="btn-outline !px-3" title="Refresh">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.6M20 20v-5h-.6M5.1 9A8 8 0 0119.4 7.5M18.9 15A8 8 0 014.6 16.5"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="histStats" class="grid grid-cols-2 gap-3 mb-4"></div>
+    <div id="histList" class="space-y-2"></div>
+  </main>
+
+
+  <!-- ================= VIEW: ADMIN ================= -->
+  <main id="view-admin" class="hidden max-w-[1500px] mx-auto px-3 sm:px-4 pt-4 pb-28 lg:pb-10">
+
+    <!-- Lock screen -->
+    <div id="adminLock" class="max-w-sm mx-auto mt-6 sm:mt-14">
+      <div class="card text-center">
+        <div class="mx-auto w-14 h-14 rounded-2xl bg-slate-900 text-brand-400 grid place-items-center">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 118 0v4"/></svg>
+        </div>
+        <h1 class="mt-4 text-lg font-bold text-slate-900">Bahagian Admin</h1>
+        <p class="text-sm text-slate-500 mt-1">Masukkan PIN admin untuk ubah maklumat syarikat, logo, cop & tandatangan.</p>
+        <input id="adminPin" type="password" inputmode="numeric" autocomplete="off" class="inp mt-5 text-center tracking-[0.5em] font-semibold" placeholder="••••" />
+        <p id="adminLockMsg" class="text-sm mt-2 min-h-[20px]"></p>
+        <button id="btnUnlock" class="btn-primary w-full mt-2">Masuk</button>
+      </div>
+    </div>
+
+    <!-- Admin panel -->
+    <div id="adminPanel" class="hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+        <div>
+          <h1 class="text-xl font-bold text-slate-900">Konfigurasi Syarikat</h1>
+          <p class="text-sm text-slate-500">Perubahan nampak terus di preview. Tekan <b>Simpan Tetapan</b> untuk guna pada semua device.</p>
+        </div>
+        <button id="btnLock" class="sm:ml-auto btn-ghost !py-2 text-sm">Kunci Admin</button>
+      </div>
+
+      <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-5 items-start">
+        <section id="adminForm" class="space-y-4">
+
+          <div class="card">
+            <div class="card-head"><span class="step">1</span><h2>Profil Syarikat</h2></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="col-span-2"><label class="lbl">Nama Syarikat</label><input class="inp uppercase-input" data-co="name" /></div>
+              <div><label class="lbl">No. Pendaftaran (SSM)</label><input class="inp uppercase-input" data-co="regNo" /></div>
+              <div><label class="lbl">Prefix No. Invoice</label><input class="inp uppercase-input" data-co="prefix" maxlength="10" /><p class="hint">AZN → AZN/1026-001</p></div>
+              <div class="col-span-2 sm:col-span-1 sm:col-start-2"><label class="lbl">Prefix No. Quotation</label><input class="inp uppercase-input" data-co="qPrefix" maxlength="12" /><p class="hint">AZN-Q → AZN-Q/1026-001</p></div>
+              <div class="col-span-2 sm:col-span-1"><label class="lbl">Prefix No. DO</label><input class="inp uppercase-input" data-co="doPrefix" maxlength="12" /><p class="hint">AZN-DO → AZN-DO/1026-001</p></div>
+              <div class="col-span-2"><label class="lbl">Alamat</label><textarea rows="2" class="inp uppercase-input resize-none" data-co="address"></textarea></div>
+              <div><label class="lbl">Email</label><input type="email" class="inp" data-co="email" /></div>
+              <div><label class="lbl">No. Telefon</label><input type="tel" class="inp" data-co="tel" /></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="step">2</span><h2>Maklumat Bank</h2></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="lbl">Nama Bank</label><input class="inp uppercase-input" data-co="bankName" list="bankList" /></div>
+              <div><label class="lbl">No. Akaun</label><input class="inp" inputmode="numeric" data-co="bankAcc" /></div>
+            </div>
+            <datalist id="bankList">
+              <option value="MAYBANK"></option><option value="CIMB BANK"></option><option value="BANK ISLAM"></option><option value="RHB BANK"></option>
+              <option value="PUBLIC BANK"></option><option value="BANK RAKYAT"></option><option value="HONG LEONG BANK"></option><option value="AMBANK"></option>
+              <option value="BSN"></option><option value="AFFIN BANK"></option><option value="BANK MUAMALAT"></option><option value="AGROBANK"></option>
+            </datalist>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="step">3</span><h2>Penandatangan</h2></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="col-span-2 sm:col-span-1"><label class="lbl">Nama</label><input class="inp uppercase-input" data-co="signName" /></div>
+              <div class="col-span-2 sm:col-span-1"><label class="lbl">Jawatan</label><input class="inp uppercase-input" data-co="signTitle" /></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="step">3b</span><h2>Penandatangan DO (Authorised By)</h2></div>
+            <p class="hint -mt-2 mb-3">Kosongkan untuk guna penandatangan & tandatangan utama. Cop syarikat dikongsi.</p>
+            <div class="grid sm:grid-cols-[1fr_170px] gap-3">
+              <div class="space-y-3">
+                <div><label class="lbl">Nama</label><input class="inp uppercase-input" data-co="doSignName" placeholder="cth: NUR AZMINA RAHIM" /></div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div><label class="lbl">Jawatan</label><input class="inp uppercase-input" data-co="doSignTitle" placeholder="cth: ADMIN" /></div>
+                  <div><label class="lbl">No. Telefon</label><input type="tel" class="inp" data-co="doSignTel" placeholder="cth: 011-6989 9049" /></div>
+                </div>
+              </div>
+              <div class="img-tile" data-key="doSignature">
+                <div class="img-box"><img alt="Tandatangan DO" /></div>
+                <div class="text-xs font-semibold text-slate-800 mt-2">Tandatangan DO</div>
+                <label class="chk"><input type="checkbox" data-bg checked /> Buang background putih</label>
+                <div class="flex gap-2 mt-2">
+                  <label class="btn-outline !py-2 !px-3 text-xs flex-1 cursor-pointer">Tukar<input type="file" accept="image/*" class="hidden" data-file /></label>
+                  <button type="button" class="btn-ghost !py-2 !px-2 text-xs" data-reset>Utama</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="step">4</span><h2>Logo, Cop & Tandatangan</h2></div>
+            <div class="grid sm:grid-cols-3 gap-3" id="imgTiles">
+              <div class="img-tile" data-key="logo">
+                <div class="img-box"><img alt="Logo" /></div>
+                <div class="text-sm font-semibold text-slate-800 mt-2">Logo</div>
+                <label class="chk"><input type="checkbox" data-bg /> Buang background putih</label>
+                <div class="flex gap-2 mt-2">
+                  <label class="btn-outline !py-2 !px-3 text-xs flex-1 cursor-pointer">Tukar<input type="file" accept="image/*" class="hidden" data-file /></label>
+                  <button type="button" class="btn-ghost !py-2 !px-3 text-xs" data-reset>Default</button>
+                </div>
+              </div>
+              <div class="img-tile" data-key="stamp">
+                <div class="img-box"><img alt="Cop" /></div>
+                <div class="text-sm font-semibold text-slate-800 mt-2">Cop Syarikat</div>
+                <label class="chk"><input type="checkbox" data-bg checked /> Buang background putih</label>
+                <div class="flex gap-2 mt-2">
+                  <label class="btn-outline !py-2 !px-3 text-xs flex-1 cursor-pointer">Tukar<input type="file" accept="image/*" class="hidden" data-file /></label>
+                  <button type="button" class="btn-ghost !py-2 !px-3 text-xs" data-reset>Default</button>
+                </div>
+              </div>
+              <div class="img-tile" data-key="signature">
+                <div class="img-box"><img alt="Tandatangan" /></div>
+                <div class="text-sm font-semibold text-slate-800 mt-2">Tandatangan</div>
+                <label class="chk"><input type="checkbox" data-bg checked /> Buang background putih</label>
+                <div class="flex gap-2 mt-2">
+                  <label class="btn-outline !py-2 !px-3 text-xs flex-1 cursor-pointer">Tukar<input type="file" accept="image/*" class="hidden" data-file /></label>
+                  <button type="button" class="btn-ghost !py-2 !px-3 text-xs" data-reset>Default</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Posisi cop & sign -->
+            <div class="mt-4 rounded-xl border border-brand-100 bg-brand-50/60 p-3">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-brand-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M3 12h18M12 3l-3 3m3-3l3 3M12 21l-3-3m3 3l3-3M3 12l3-3m-3 3l3 3m15-3l-3-3m3 3l-3 3"/></svg>
+                <span class="text-sm font-semibold text-slate-800">Susun Kedudukan</span>
+              </div>
+              <p class="text-xs text-slate-600 mt-1">Tarik (drag) cop atau tandatangan terus dalam preview — guna mouse atau jari. Boleh bertindih atau diasingkan.</p>
+              <div class="seg mt-3" id="posSeg">
+                <button type="button" data-sel="stamp" class="active">Cop</button>
+                <button type="button" data-sel="signature">Tandatangan</button>
+              </div>
+              <div class="flex items-center gap-4 mt-3">
+                <div class="nudge" id="nudge">
+                  <span></span><button type="button" data-d="0,-1" title="Atas">↑</button><span></span>
+                  <button type="button" data-d="-1,0" title="Kiri">←</button><button type="button" data-d="0,1" title="Bawah">↓</button><button type="button" data-d="1,0" title="Kanan">→</button>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <label class="lbl flex justify-between">Saiz <span id="sizeVal" class="text-slate-400"></span></label>
+                  <input type="range" id="posSize" class="rng" />
+                </div>
+              </div>
+              <button type="button" id="btnPosReset" class="btn-ghost !py-2 !px-3 text-xs mt-2">↺ Reset kedudukan & saiz asal</button>
+            </div>
+
+            <p class="hint mt-3">Guna gambar PNG/JPG jelas. Untuk cop & tandatangan, tangkap gambar atas kertas putih — sistem akan buang background putih supaya cop bertindih cantik dengan tandatangan.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="step">5</span><h2>Notes</h2>
+              <div class="doc-seg doc-seg-sm ml-auto" id="notesSeg">
+                <button type="button" data-ndoc="invoice" class="active">Invoice</button>
+                <button type="button" data-ndoc="quotation">Quotation</button>
+                <button type="button" data-ndoc="do">DO</button>
+              </div>
+            </div>
+            <p class="hint -mt-2 mb-3">Notes 1 (bayaran cek & bank) sama untuk Invoice & Quotation. Pilih tab di atas untuk tengok preview.</p>
+            <div id="notesInv" class="space-y-3">
+              <div><label class="lbl">Invoice — Notes 2</label><input class="inp" data-co="note2" /></div>
+              <div><label class="lbl">Invoice — Notes 3</label><input class="inp" data-co="note3" /></div>
+            </div>
+            <div id="notesQ" class="space-y-3 hidden">
+              <div><label class="lbl">Quotation — Notes 2</label><input class="inp" data-co="qNote1" /></div>
+              <div><label class="lbl">Quotation — Notes 3</label><input class="inp" data-co="qNote2" /></div>
+              <div><label class="lbl">Quotation — Notes 4</label><input class="inp" data-co="qNote3" /></div>
+            </div>
+            <div id="notesDO" class="space-y-3 hidden">
+              <div><label class="lbl">DO — Notes 1</label><input class="inp" data-co="doNote1" /></div>
+              <div><label class="lbl">DO — Notes 2</label><input class="inp" data-co="doNote2" /></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="step">6</span><h2>Keselamatan</h2></div>
+            <label class="lbl">Tukar PIN Admin (biar kosong jika tak nak tukar)</label>
+            <input id="newPin" type="password" inputmode="numeric" autocomplete="new-password" class="inp" placeholder="PIN baru (min 4 digit)" />
+          </div>
+
+          <div class="hidden lg:flex gap-3">
+            <button id="btnAdminCancel" type="button" class="btn-outline flex-1">Batal Perubahan</button>
+            <button id="btnAdminSave" type="button" class="btn-primary flex-[1.4]">Simpan Tetapan</button>
+          </div>
+        </section>
+
+        <div id="adminPreviewSlot"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mobile admin bar -->
+  <div id="adminBar" class="hidden lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200 px-3 pt-3 safe-bottom">
+    <div class="flex gap-2">
+      <button id="mAdminCancel" class="btn-outline flex-1">Batal</button>
+      <button id="mAdminSave" class="btn-primary flex-[1.6]">Simpan Tetapan</button>
+    </div>
+  </div>
+
+  <!-- ================= LOADING OVERLAY ================= -->
+  <div id="loading" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl">
+      <div class="mx-auto w-12 h-12 rounded-full border-4 border-brand-100 border-t-brand-500 animate-spin"></div>
+      <div id="loadingText" class="mt-4 font-semibold text-slate-800">Menjana PDF...</div>
+      <div id="loadingSub" class="text-xs text-slate-500 mt-1">Jangan tutup aplikasi</div>
+    </div>
+  </div>
+
+  <!-- ================= SUCCESS MODAL ================= -->
+  <div id="successModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-6">
+    <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl safe-bottom">
+      <div class="mx-auto w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <h3 id="successTitle" class="mt-3 text-lg font-bold text-center text-slate-900">Invoice Berjaya Disimpan</h3>
+      <p id="successText" class="text-sm text-center text-slate-500 mt-1"></p>
+      <div class="mt-5 grid gap-2">
+        <a id="successOpen" href="#" target="_blank" rel="noopener" class="btn-primary">Buka PDF di Google Drive</a>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="successShare" class="btn-outline">Kongsi Link</button>
+          <button id="successDownload" class="btn-outline">Muat Turun</button>
+        </div>
+        <button id="successNew" class="btn-ghost">Buat Invoice Baru</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SETTINGS MODAL ================= -->
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-6">
+    <div class="bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl safe-bottom">
+      <h3 class="text-lg font-bold text-slate-900">Tetapan Sambungan</h3>
+      <p class="text-sm text-slate-500 mt-1">Tampal URL Web App dari Apps Script (berakhir dengan <code>/exec</code>).</p>
+      <label class="lbl mt-4" for="setApi">Web App URL</label>
+      <input id="setApi" class="inp font-mono text-xs" placeholder="https://script.google.com/macros/s/.../exec" />
+      <label class="lbl mt-3" for="setKey">API Key</label>
+      <input id="setKey" class="inp font-mono text-xs" />
+      <div id="pingResult" class="text-sm mt-3"></div>
+      <div class="mt-5 flex gap-2">
+        <button id="setTest" class="btn-outline flex-1">Uji Sambungan</button>
+        <button id="setSave" class="btn-primary flex-1">Simpan</button>
+      </div>
+      <button id="setClose" class="btn-ghost w-full mt-2">Tutup</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Libraries (PDF) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
