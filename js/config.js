@@ -3,7 +3,7 @@
    ========================================================= */
 window.APP_CONFIG = {
   // 1) Tampal URL Web App Apps Script di sini (berakhir dengan /exec)
-  API_URL: 'PASTE_WEB_APP_URL_DI_SINI',
+  API_URL: 'https://script.google.com/macros/s/AKfycbza8vxNArTdqKkhtWIeiuLmh8irctuQzfA60yrkrwk_QfS6CJFq6OS8-NdBdp4j_iaS/exec',
 
   // 2) Mesti SAMA dengan API_KEY dalam Code.gs
   API_KEY: 'AZN-2026-INVOICE',
